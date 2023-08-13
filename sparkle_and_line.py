@@ -61,30 +61,44 @@ class Square:
         self.y = y
         self.size = size
 
-        self.positions = []
+        self.center = 20, 20
 
-    def set_pos(self):
-        pos1 = 0,0
-        pos2 = self.size*4/8, self.size*4/8
-        self.positions.append(pos1)
-        self.positions.append(pos2)
+        self.rect_list = []
+        self.timers = [0,10,20,30,40]
+
+    def create_rect(self):
+        rect_1 = (self.x, self.y, 40,40)
+        rect_2 = (self.x+4, self.y+4, 32,32)
+        rect_3 = (self.x+8, self.y+8, 24,24)
+        rect_4 = (self.x+12, self.y+12, 16,16)
+        rect_5 = (self.x+16, self.y+16, 8,8)
+
+        self.rect_list = [rect_1, rect_2, rect_3, rect_4, rect_5]
+
+        for i in range(5):
+            rectA = (self.x+i*5, self.y+i*5, 50-i*10, 50-i*10)
+            self.rect_list.append(rectA)
+
+
+        '''rect_1 = (self.x, self.y, 80,80)
+        rect_2 = (self.x+8, self.y+8, 64,64)
+        rect_3 = (self.x+16, self.y+16, 48,48)
+        rect_4 = (self.x+24, self.y+24, 32,32)
+        rect_5 = (self.x+32, self.y+32, 16,16)
+
+        self.rect_list = [rect_1, rect_2, rect_3, rect_4, rect_5]'''
 
     def draw(self, win):
 
-        for pos in self.positions:
-            s1 = self.size
-            s2 = 180
+        for rect, timer in zip(self.rect_list, self.timers):
+            if timer < 50:
+                pygame.draw.rect(win, colors[1], rect, 1)
 
-            rect1 = pygame.Rect(pos[0] + self.x, pos[1] + self.y, self.size, self.size)
-            rect2 = centered_rect(rect1, 150)
-            rect3 = pygame.Rect(pos[0]+self.x-7, pos[1]+self.y-7, s1,s1)
-            pygame.draw.rect(win, colors[1], rect1, 1)
-            #pygame.draw.rect(win, colors[1], rect2, 1)
-            pygame.draw.rect(win, colors[1], rect3, 1)
-
-
-
-
+    def increase_timer(self):
+        for i in range(len(self.timers)):
+            self.timers[i] += 3
+            if self.timers[i] > 200:
+                self.timers[i] = 0
 
 
     def move(self):
@@ -96,22 +110,13 @@ class Square:
         self.y = Ry
 
 
-squares = []
-
-for i in range(3):
-    Rx = random.randrange(1000)
-    Ry = random.randrange(700)
-
-    square = Square(Rx, Ry)
-    square.set_pos()
-
-    squares.append(square)
-
 
 def draw_screen(win):
     win.fill(bg_color)
 
     draw_lines(win)
+    square.draw(win)
+    square.increase_timer()
 
     if indicator:
         draw_mouse_indicator(win, pos)
@@ -218,6 +223,9 @@ data = load_json(SAVED_DATA)
 if LOAD_LIST:
     lines = data['lines']
     line = lines[0]
+
+square = Square(300,300)
+square.create_rect()
 
 
 switch = 0
